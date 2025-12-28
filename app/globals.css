@@ -1,26 +1,119 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@plugin "tailwindcss-animate"; /* If you plan to use animations later */
 
-@theme inline {
+@theme {
+  /* 
+    We map Tailwind utility names (e.g., bg-background) to these CSS variables.
+    Tailwind v4 automatically looks for --color-* variables in the theme block.
+  */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* 
+  Define the actual color values here.
+  We use OKLCH or sRGB. For simplicity and compatibility, we keep HSL/RGB or Hex.
+  Here we implement the Gemini Deep Dark Look.
+*/
+:root {
+  /* Professional Light Mode */
+  --background: #ffffff;
+  --foreground: #0f172a; /* Slate 900 */
+  
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  
+  --primary: #2563eb; /* Blue 600 */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  
+  --muted: #f1f5f9; /* Slate 100 */
+  --muted-foreground: #64748b; /* Slate 500 */
+  
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  
+  --border: #e2e8f0; /* Slate 200 */
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Gemini Deep Dark Mode (#131314) */
+  --background: #131314; 
+  --foreground: #e2e8f0; /* Slate 200 */
+  
+  --card: #1E1F20; /* Slightly lighter for cards */
+  --card-foreground: #e2e8f0;
+  
+  --popover: #1E1F20;
+  --popover-foreground: #e2e8f0;
+  
+  --primary: #93c5fd; /* Blue 300 */
+  --primary-foreground: #0f172a;
+  
+  --secondary: #27272a; /* Zinc 800 */
+  --secondary-foreground: #f8fafc;
+  
+  --muted: #1E1F20;
+  --muted-foreground: #94a3b8;
+  
+  --accent: #27272a;
+  --accent-foreground: #f8fafc;
+  
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f8fafc;
+  
+  --border: #2e2f30; /* Dark, subtle border */
+  --input: #2e2f30;
+  --ring: #93c5fd;
+}
+
+/* Global Reset adjustments */
+@layer base {
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
