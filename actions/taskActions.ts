@@ -148,3 +148,25 @@ export async function deleteTask(taskId: string) {
     return { error: "Failed to delete" };
   }
 }
+
+
+// 
+/**
+ * Fetch all tasks based on filter (pending | completed)
+ */
+export async function getUserTasks(filter: "pending" | "completed" = "pending") {
+  const userId = await getUserId();
+  await connectDB();
+
+  const isCompleted = filter === "completed";
+
+  // Sort: Pending tasks by date (asc), Completed tasks by newest (desc)
+  const sortOrder = isCompleted ? -1 : 1;
+
+  const tasks = await Task.find({
+    user: userId,
+    isCompleted: isCompleted,
+  }).sort({ date: sortOrder, createdAt: -1 });
+
+  return JSON.parse(JSON.stringify(tasks));
+}
