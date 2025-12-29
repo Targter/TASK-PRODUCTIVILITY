@@ -1,7 +1,7 @@
-// import { getMonthlyStats } from "@/actions/analyticsActions";
 import { getMonthlyStats } from "@/actions/analyticsActions";
+import { CalendarView } from "@/components/analytics/calendar-view";
 import { format } from "date-fns";
-import { CheckCircle2, Circle, ListTodo } from "lucide-react";
+import { CheckCircle2, Circle, TrendingUp } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -15,76 +15,74 @@ export default async function AnalyticsPage() {
       : 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-10">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
-        <p className="text-muted-foreground">Report for {currentMonth}</p>
+        <h1 className="text-3xl font-bold text-foreground">Analytics</h1>
+        <p className="text-muted-foreground">Your productivity at a glance.</p>
       </div>
 
+      {/* Summary Cards */}
       <div className="grid gap-4 md:grid-cols-3">
-        {/* Completion Rate Card */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
+        {/* Completion Rate */}
+        <div className="rounded-xl border border-border bg-card p-6 shadow-sm relative overflow-hidden">
+          <div className="absolute right-0 top-0 h-24 w-24 translate-x-8 translate-y--8 rounded-full bg-primary/10 blur-2xl" />
+          <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-muted-foreground">
-              Completion Rate
+              Monthly Rate
             </h3>
-            <span className="text-xs font-bold text-primary">
-              {currentMonth}
-            </span>
+            <TrendingUp className="h-4 w-4 text-primary" />
           </div>
-          <div className="mt-4 flex items-baseline">
+          <div className="flex items-baseline gap-2">
             <span className="text-4xl font-bold text-foreground">
               {completionRate}%
             </span>
+            <span className="text-xs text-muted-foreground">completion</span>
           </div>
-          <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted">
+          <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full bg-primary transition-all duration-500"
+              className="h-full bg-primary transition-all duration-1000 ease-out"
               style={{ width: `${completionRate}%` }}
             />
           </div>
         </div>
 
-        {/* Completed Tasks */}
+        {/* Completed Absolute */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="rounded-full bg-green-500/10 p-2 text-green-500">
-              <CheckCircle2 className="h-4 w-4" />
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
+              <CheckCircle2 className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Completed
-            </h3>
-          </div>
-          <div className="mt-4">
-            <span className="text-3xl font-bold text-foreground">
-              {stats.completedTasks}
-            </span>
-            <p className="text-xs text-muted-foreground">
-              Tasks finished this month
-            </p>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Completed
+              </p>
+              <p className="text-2xl font-bold text-foreground">
+                {stats.completedTasks}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Pending Tasks */}
+        {/* Pending Absolute */}
         <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="rounded-full bg-orange-500/10 p-2 text-orange-500">
-              <Circle className="h-4 w-4" />
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500">
+              <Circle className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-medium text-muted-foreground">
-              Pending
-            </h3>
-          </div>
-          <div className="mt-4">
-            <span className="text-3xl font-bold text-foreground">
-              {stats.pendingTasks}
-            </span>
-            <p className="text-xs text-muted-foreground">
-              Remaining in {currentMonth}
-            </p>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Pending
+              </p>
+              <p className="text-2xl font-bold text-foreground">
+                {stats.pendingTasks}
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* The New Powerful Calendar */}
+      <CalendarView />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { acknowledgeReminder } from "@/actions/reminderActions";
-import { Bell, X } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 
@@ -12,42 +12,37 @@ interface ReminderProps {
 export function ActiveReminders({ reminders }: ReminderProps) {
   const router = useRouter();
 
-  if (reminders.length === 0) return null;
-
   async function handleDismiss(id: string) {
     await acknowledgeReminder(id);
     router.refresh();
   }
 
   return (
-    <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/30 dark:bg-red-900/10">
-      <div className="mb-3 flex items-center gap-2 text-red-600 dark:text-red-400">
-        <Bell className="h-5 w-5 animate-pulse" />
-        <h3 className="font-semibold">Active Reminders</h3>
-      </div>
-      <div className="space-y-2">
-        {reminders.map((rem) => (
-          <div
-            key={rem._id}
-            className="flex items-center justify-between rounded-md bg-white p-3 shadow-sm dark:bg-card"
-          >
-            <div>
-              <p className="font-medium text-foreground">{rem.title}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatDistanceToNow(new Date(rem.dateTime), {
-                  addSuffix: true,
-                })}
-              </p>
-            </div>
+    <div className="space-y-3">
+      {reminders.map((rem) => (
+        <div
+          key={rem._id}
+          className="group flex flex-col gap-1 rounded-lg border border-border/50 bg-muted/30 p-3 transition-all hover:bg-muted/60 hover:border-primary/20"
+        >
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-sm font-medium text-foreground leading-tight">
+              {rem.title}
+            </span>
             <button
               onClick={() => handleDismiss(rem._id)}
-              className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              title="Mark as done"
             >
-              <X className="h-4 w-4" />
+              <Check className="h-4 w-4" />
             </button>
           </div>
-        ))}
-      </div>
+          
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wide">
+            <Clock className="h-3 w-3" />
+            {formatDistanceToNow(new Date(rem.dateTime))} ago
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
