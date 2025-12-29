@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { UserCircle, Menu, X } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
   children,
