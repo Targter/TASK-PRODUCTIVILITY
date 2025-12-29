@@ -6,9 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { UserCircle, Menu, X } from "lucide-react";
 import { useSession } from "next-auth/react";
-
-// Note: Since we need state for the mobile menu, we turn the layout into a client component.
-// The pages inside remain server components.
+import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
   children,
@@ -21,7 +19,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen w-full flex-col bg-background md:flex-row">
       {/* Desktop Sidebar */}
-      <div className="hidden md:block h-full">
+      <div className="hidden md:block h-full shrink-0">
         <Sidebar />
       </div>
 
@@ -52,7 +50,7 @@ export default function DashboardLayout({
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex h-14 items-center justify-between border-b border-border bg-card px-4 lg:px-6">
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card px-4 lg:px-6">
           <div className="flex items-center gap-3 md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
@@ -76,14 +74,19 @@ export default function DashboardLayout({
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto ">
-          <div className="mx-auto max-w-6xl space-y-4 animate-in fade-in duration-500">
-            {children}
+        {/* 
+            Page Content
+            Added 'no-scrollbar' to hide the bar while keeping functionality.
+        */}
+        <main className="flex-1 overflow-y-auto no-scrollbar">
+          <div className="flex min-h-full flex-col">
+            <div className="mx-auto w-full max-w-6xl flex-1 space-y-4 p-4 animate-in fade-in duration-500">
+              {children}
+            </div>
+
+            <Footer />
           </div>
         </main>
-
-        <Footer />
       </div>
     </div>
   );

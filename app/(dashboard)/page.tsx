@@ -1,4 +1,3 @@
-// import { getDashboardTasks } from "@/actions/taskActions";
 import { getDashboardTasks } from "@/actions/taskActions";
 import { getActiveReminders } from "@/actions/reminderActions";
 import { AddTask } from "@/components/tasks/add-task";
@@ -8,6 +7,8 @@ import { CalendarStrip } from "@/components/dashboard/calendar-strip";
 import { format, isSameDay } from "date-fns";
 import { AlertTriangle, Layers, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getServerSession } from "next-auth"; // Import Session
+import { authOptions } from "@/lib/auth"; // Import Auth Config
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,11 @@ interface PageProps {
 export default async function DashboardPage(props: PageProps) {
   const params = await props.searchParams;
   const selectedDateStr = params.date;
+
+  // 1. Fetch Session to get User Name
+  const session = await getServerSession(authOptions);
+  // Get first name or default to "User"
+  const userName = session?.user?.name?.split(" ")[0] || "User";
 
   const today = new Date();
   const viewDate = selectedDateStr ? new Date(selectedDateStr) : today;
@@ -48,8 +54,9 @@ export default async function DashboardPage(props: PageProps) {
           {/* Header */}
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
+              {/* Dynamic Name Display */}
               {isViewToday
-                ? `${greeting}, User.`
+                ? `${greeting}, ${userName}.`
                 : format(viewDate, "EEEE, MMMM do")}
             </h1>
             <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
@@ -107,7 +114,7 @@ export default async function DashboardPage(props: PageProps) {
 
         {/* --- RIGHT COLUMN: CONTEXT (Span 4) --- */}
         <div className="lg:col-span-4 space-y-6">
-          {/* 1. Reminders Panel (Always show Active Reminders regardless of date) */}
+          {/* 1. Reminders Panel */}
           <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
             <div className="flex items-center gap-2 mb-3 text-primary">
               <Bell className="h-4 w-4" />
@@ -125,11 +132,7 @@ export default async function DashboardPage(props: PageProps) {
             )}
           </div>
 
-          {/* 
-            2. Pending / Overdue Panel 
-            Now visible on ANY date. 
-            Displays tasks strictly older than the date you are currently viewing.
-          */}
+          {/* 2. Pending / Overdue Panel */}
           {pending.length > 0 && (
             <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-4">
               <div className="flex items-center gap-2 mb-3 text-orange-600 dark:text-orange-500">

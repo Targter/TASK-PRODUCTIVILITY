@@ -11,15 +11,9 @@ import {
   addMonths,
   subMonths,
   isSameMonth,
-  isSameDay,
   isToday,
 } from "date-fns";
-import {
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-  CheckCircle2,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -30,7 +24,6 @@ export function CalendarView() {
   const [activity, setActivity] = useState<Record<string, DayActivity>>({});
   const [loading, setLoading] = useState(false);
 
-  // Fetch data when month changes
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -44,113 +37,135 @@ export function CalendarView() {
     fetchData();
   }, [currentMonth]);
 
-  // Generate Calendar Grid
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(monthStart);
   const startDate = startOfWeek(monthStart);
   const endDate = endOfWeek(monthEnd);
-
   const calendarDays = eachDayOfInterval({ start: startDate, end: endDate });
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   function handleDayClick(day: Date) {
-    // Navigate to dashboard with that specific date selected
-    const dateStr = format(day, "yyyy-MM-dd");
-    router.push(`/?date=${dateStr}`);
+    router.push(`/?date=${format(day, "yyyy-MM-dd")}`);
   }
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-foreground">
+    <div className="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+      {/* Header Toolbar */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/20">
+        <h2 className="text-sm font-bold uppercase tracking-widest text-foreground flex items-center gap-2">
           {format(currentMonth, "MMMM yyyy")}
+          <span className="text-[10px] text-muted-foreground font-normal normal-case border border-border px-1.5 rounded bg-background">
+            Monthly View
+          </span>
         </h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={() => setCurrentMonth(new Date())}
-            className="text-xs font-medium px-3 py-1 rounded-md border border-border hover:bg-muted"
+            className="text-xs font-semibold px-3 py-1.5 rounded-md hover:bg-muted transition-colors"
           >
             Today
           </button>
           <button
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            className="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
           >
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      {/* Grid Header */}
-      <div className="grid grid-cols-7 mb-2 text-center">
+      {/* Grid Headers */}
+      <div className="grid grid-cols-7 border-b border-border bg-muted/5">
         {weekDays.map((day) => (
           <div
             key={day}
-            className="text-xs font-medium text-muted-foreground py-2"
+            className="text-[10px] font-bold text-muted-foreground uppercase text-center py-2"
           >
             {day}
           </div>
         ))}
       </div>
 
-      {/* Calendar Days */}
+      {/* The Grid */}
       <div
         className={cn(
-          "grid grid-cols-7 gap-1",
+          "grid grid-cols-7 bg-muted/10",
           loading && "opacity-50 pointer-events-none"
         )}
       >
-        {calendarDays.map((day, idx) => {
+        {calendarDays.map((day) => {
           const dateKey = format(day, "yyyy-MM-dd");
           const dayData = activity[dateKey];
           const isCurrentMonth = isSameMonth(day, monthStart);
+          const isCurrentDay = isToday(day);
+
+          // Calculate "Heat" (Intensity based on tasks)
+          const taskCount = dayData?.taskCount || 0;
+          const completed = dayData?.completedCount || 0;
+
+          // Determine Intensity Class (GitHub style)
+          let intensityClass = "bg-card"; // Default empty
+          if (taskCount > 0) {
+            const ratio = completed / taskCount;
+            if (ratio === 1)
+              intensityClass = "bg-primary/20 hover:bg-primary/30";
+            else if (ratio > 0.5)
+              intensityClass = "bg-primary/10 hover:bg-primary/20";
+            else intensityClass = "bg-orange-500/5 hover:bg-orange-500/10";
+          }
+          if (!isCurrentMonth) intensityClass = "bg-muted/30 opacity-60";
 
           return (
             <button
               key={day.toString()}
               onClick={() => handleDayClick(day)}
               className={cn(
-                "min-h-[80px] p-2 flex flex-col items-start justify-between rounded-md border transition-all hover:border-primary/50 hover:bg-primary/5 text-left relative group",
-                !isCurrentMonth
-                  ? "bg-muted/20 border-transparent text-muted-foreground/40"
-                  : "border-border bg-card",
-                isToday(day) && "border-primary bg-primary/5"
+                "h-24 p-2 flex flex-col justify-between border-r border-b border-border/50 transition-colors relative group",
+                intensityClass,
+                isCurrentDay && "ring-inset ring-2 ring-primary z-10"
               )}
             >
-              <span
-                className={cn(
-                  "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full",
-                  isToday(day)
-                    ? "bg-primary text-primary-foreground"
-                    : "text-foreground"
-                )}
-              >
-                {format(day, "d")}
-              </span>
+              <div className="flex justify-between items-start w-full">
+                <span
+                  className={cn(
+                    "text-xs font-medium",
+                    isCurrentDay
+                      ? "text-primary font-bold"
+                      : "text-muted-foreground group-hover:text-foreground"
+                  )}
+                >
+                  {format(day, "d")}
+                </span>
 
-              {/* Indicators */}
-              <div className="flex w-full items-end justify-between mt-2 gap-1">
-                {dayData?.taskCount > 0 && (
-                  <div className="flex items-center gap-1 bg-blue-500/10 px-1.5 py-0.5 rounded text-[10px] text-blue-500 font-medium">
-                    <CheckCircle2 className="h-3 w-3" />
-                    <span>
-                      {dayData.completedCount}/{dayData.taskCount}
-                    </span>
-                  </div>
-                )}
+                {/* Note Indicator */}
                 {dayData?.hasNote && (
-                  <div className="text-amber-500" title="Note added">
-                    <FileText className="h-3.5 w-3.5" />
-                  </div>
+                  <FileText className="h-3 w-3 text-amber-500/70" />
                 )}
               </div>
+
+              {/* Task Bar */}
+              {taskCount > 0 && (
+                <div className="w-full space-y-1">
+                  <div className="flex items-center justify-between text-[9px] text-muted-foreground">
+                    <span>{Math.round((completed / taskCount) * 100)}%</span>
+                    <span>
+                      {completed}/{taskCount}
+                    </span>
+                  </div>
+                  <div className="h-1 w-full bg-muted-foreground/20 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all duration-500"
+                      style={{ width: `${(completed / taskCount) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </button>
           );
         })}
