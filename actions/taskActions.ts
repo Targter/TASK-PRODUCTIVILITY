@@ -192,3 +192,39 @@ export async function getDashboardTasks(dateStr?: string) {
     return { tasks: [], pending: [] };
   }
 }
+
+// updatee
+export async function updateTaskTitle(taskId: string, newTitle: string) {
+  const userId = await getUserId();
+  await connectDB();
+
+  try {
+    await Task.findOneAndUpdate(
+      { _id: taskId, user: userId },
+      { title: newTitle }
+    );
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to update" };
+  }
+}
+
+
+// reschedule
+export async function rescheduleTask(taskId: string, newDateStr: string) {
+  const userId = await getUserId();
+  await connectDB();
+
+  try {
+    await Task.findOneAndUpdate(
+      { _id: taskId, user: userId },
+      { date: new Date(newDateStr) }
+    );
+    revalidatePath("/");
+    revalidatePath("/tasks");
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to reschedule" };
+  }
+}

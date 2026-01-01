@@ -1,5 +1,5 @@
 import { getDashboardTasks } from "@/actions/taskActions";
-import { getActiveReminders } from "@/actions/reminderActions";
+import { getRemindersForDate } from "@/actions/reminderActions";
 import { AddTask } from "@/components/tasks/add-task";
 import { TaskItem } from "@/components/tasks/task-item";
 import { ActiveReminders } from "@/components/reminders/active-reminders";
@@ -29,9 +29,10 @@ export default async function DashboardPage(props: PageProps) {
   const viewDate = selectedDateStr ? new Date(selectedDateStr) : today;
   const isViewToday = isSameDay(viewDate, today);
 
+  // const dayy = day(today);
   const [taskData, activeReminders] = await Promise.all([
     getDashboardTasks(selectedDateStr),
-    getActiveReminders(),
+    getRemindersForDate(selectedDateStr),
   ]);
 
   const { tasks, pending } = taskData;
