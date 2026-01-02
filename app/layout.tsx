@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 // import { AuthProvider } from "@/components/providers/auth-provider"; // <--- Import this
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,14 +23,16 @@ export default function RootLayout({
       <body className={inter.className}>
         {/* Wrap everything with AuthProvider */}
         <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system" // or "dark" if you want dark by default
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system" // or "dark" if you want dark by default
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
